@@ -82,9 +82,19 @@ namespace TodoApp.Controllers
 
             role.Name = roleViewModel.Name;
 
-            await _roleManager.UpdateAsync(role);
+            var result = await _roleManager.UpdateAsync(role);
 
-            return RedirectToAction("Index");
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(roleViewModel);
         }
 
         public async Task<IActionResult> Delete(string roleId)
